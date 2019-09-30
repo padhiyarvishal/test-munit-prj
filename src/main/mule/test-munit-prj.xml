@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2d658f89-d0ce-4479-ac19-289f3e00b235" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="test-munit-prjFlow" doc:id="63a22193-54ba-4fdf-a98c-523cc56179ea" >
+		<http:listener doc:name="munit test" doc:id="8dbe1420-2886-4bb3-a5d2-e06551be6eca" config-ref="HTTP_Listener_config" path="/munitTest"/>
+		<set-variable value="Test Variable for the Munit" doc:name="Set Variable" doc:id="d02ab6d2-9d52-427c-a65e-00c34fe1b3ea" variableName="code"/>
+		<set-payload value="#[vars.code]" doc:name="Set Payload" doc:id="a4a59909-dd35-43dc-b54f-111d6e0a252e" />
+		<ee:transform doc:name="Transform Message" doc:id="1e689925-6094-4e61-b1eb-7b00ef1733f5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+
+[{errors: [] as Array {class: "java.util.ArrayList"}, 
+ id: "1234" as String {class: "java.lang.String"}, 
+ success: "true" as String {class: "java.lang.String"}
+}]
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="3758a4ec-4939-4828-987a-aee400e219d4" message="#[payload]"/>
+	</flow>
+</mule>
